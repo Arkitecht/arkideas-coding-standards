@@ -128,16 +128,36 @@ class ArkIdeas_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeS
             if ($inClass === true) {
                 $varName = substr($varName, 1);
             }
-        }
+        } else {
+            $staticVariable = false;
 
-        if (PHP_CodeSniffer::isCamelCaps($varName, false, true, false) === false) {
-            $error = 'Variable "%s" is not in valid camel caps format';
-            $data = [$originalVarName];
-            $phpcsFile->addError($error, $stackPtr, 'NotCamelCaps', $data);
-        } else if (preg_match('|\d|', $varName) === 1) {
-            $warning = 'Variable "%s" contains numbers but this is discouraged';
-            $data = [$originalVarName];
-            $phpcsFile->addWarning($warning, $stackPtr, 'ContainsNumbers', $data);
+            $objOperator = $phpcsFile->findPrevious([T_WHITESPACE], ($stackPtr - 1), null, true);
+            if ($tokens[ $objOperator ]['code'] === T_DOUBLE_COLON) {
+                $staticVariable = true;
+            }
+
+            if ($staticVariable === true) {
+                if (self::isSnakeCase($varName) === false) {
+                    $error = 'Variable "%s" is not in valid snake case format';
+                    $data = [$varName];
+                    $phpcsFile->addError($error, $stackPtr, 'NotSnakeCase', $data);
+                } else if (preg_match('|\d|', $varName) === 1) {
+                    $warning = 'Variable "%s" contains numbers but this is discouraged';
+                    $data = [$varName];
+                    $phpcsFile->addWarning($warning, $stackPtr, 'ContainsNumbers', $data);
+                }
+            } else {
+
+                if (PHP_CodeSniffer::isCamelCaps($varName, false, true, false) === false) {
+                    $error = 'Variable "%s" is not in valid camel caps format';
+                    $data = [$originalVarName];
+                    $phpcsFile->addError($error, $stackPtr, 'NotCamelCaps', $data);
+                } else if (preg_match('|\d|', $varName) === 1) {
+                    $warning = 'Variable "%s" contains numbers but this is discouraged';
+                    $data = [$originalVarName];
+                    $phpcsFile->addWarning($warning, $stackPtr, 'ContainsNumbers', $data);
+                }
+            }
         }
 
     }//end processVariable()
@@ -162,7 +182,9 @@ class ArkIdeas_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeS
         $laravelVars = [
             'dontReport',
             'primaryKey',
-            'redirectTo'
+            'redirectTo',
+            'middlewareGroups',
+            'routeMiddleware',
         ];
 
         if (in_array($varName, $laravelVars) === true) {
