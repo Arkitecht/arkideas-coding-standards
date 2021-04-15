@@ -1,37 +1,12 @@
 <?php
-/**
- * Squiz_Sniffs_NamingConventions_ValidVariableNameSniff.
- *
- * PHP version 5
- *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2014 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @link      http://pear.php.net/package/PHP_CodeSniffer
- */
 
-if (class_exists('PHP_CodeSniffer_Standards_AbstractVariableSniff', true) === false) {
-    throw new PHP_CodeSniffer_Exception('Class PHP_CodeSniffer_Standards_AbstractVariableSniff not found');
-}
+namespace PHP_CodeSniffer\Standards\Arkideas\Sniffs\NamingConventions;
 
-/**
- * Squiz_Sniffs_NamingConventions_ValidVariableNameSniff.
- *
- * Checks the naming of variables and member variables.
- *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2014 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: @package_version@
- * @link      http://pear.php.net/package/PHP_CodeSniffer
- */
-class ArkIdeas_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeSniffer_Standards_AbstractVariableSniff
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
+use PHP_CodeSniffer\Util\Common;
+
+class ArkIdeas_Sniffs_NamingConventions_ValidVariableNameSniff extends AbstractVariableSniff
 {
 
     /**
@@ -44,17 +19,7 @@ class ArkIdeas_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeS
         T_COMMENT,
     ];
 
-
-    /**
-     * Processes this test, when one of its tokens is encountered.
-     *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
-     *
-     * @return void
-     */
-    protected function processVariable(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processVariable(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
         $varName = ltrim($tokens[ $stackPtr ]['content'], '$');
@@ -148,7 +113,7 @@ class ArkIdeas_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeS
                 }
             } else {
 
-                if (PHP_CodeSniffer::isCamelCaps($varName, false, true, false) === false) {
+                if (Common::isCamelCaps($varName, false, true, false) === false) {
                     $error = 'Variable "%s" is not in valid camel caps format';
                     $data = [$originalVarName];
                     $phpcsFile->addError($error, $stackPtr, 'NotCamelCaps', $data);
@@ -172,7 +137,7 @@ class ArkIdeas_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeS
      *
      * @return void
      */
-    protected function processMemberVar(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processMemberVar(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
         $varName = ltrim($tokens[ $stackPtr ]['content'], '$');
@@ -224,7 +189,6 @@ class ArkIdeas_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeS
         }
 
         return true;
-
     }
 
 
@@ -237,7 +201,7 @@ class ArkIdeas_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeS
      *
      * @return void
      */
-    protected function processVariableInString(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processVariableInString(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -263,7 +227,7 @@ class ArkIdeas_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeS
                     continue;
                 }
 
-                if (PHP_CodeSniffer::isCamelCaps($varName, false, true, false) === false) {
+                if (Common::isCamelCaps($varName, false, true, false) === false) {
                     $error = 'Variable "%s" is not in valid camel caps format';
                     $data = [$varName];
                     $phpcsFile->addError($error, $stackPtr, 'StringVarNotCamelCaps', $data);
